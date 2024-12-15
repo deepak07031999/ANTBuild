@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<project name="Main" default="info">
+
+    <!--    property is like an variable  -->
+    <property name="source" value="build.xml"/>
+
+    <!--    Default target build structure  -->
+    <target name="info">
+        <property name="targetName" value="info"/>
+        <echo>From ${source}, Target: ${targetName}</echo>
+    </target>
+
+    <!--    SomeOther target build  -->
+    <!--    One file can have multiple Target   -->
+    <target name="otherTarget">
+        <property name="targetName" value="otherTarget"/>
+        <echo>From ${source}, Target: ${targetName}</echo>
+    </target>
+
+    <!--    FileList    -->
+    <filelist id="copySrc" dir="src">
+        <file name="Main.java"/>
+    </filelist>
+
+    <!--    Copy data type  -->
+    <target name="copySrc">
+        <property name="targetName" value="copySrc"/>
+        <echo>From ${source}, Target: ${targetName}</echo>
+        <copy todir="clone">
+            <!--    by using refid we are using fileSet defined above with that id  -->
+            <filelist refid="copySrc"/>
+        </copy>
+    </target>
+
+<!--    Build the Main Class-->
+    <target name="buildSrc">
+        <property name="targetName" value="buildSrc"/>
+        <echo>From ${source}, Target: ${targetName}</echo>
+<!--        Create a out folder to contain compiled byte code-->
+        <mkdir dir="out"/>
+        <javac destdir = "out">
+            <src path="src"/>
+        </javac>
+        <java classname="src.Main">
+            <classpath>
+                <pathelement path="out"/>
+            </classpath>
+        </java>
+    </target>
+
+<!--    Clean Build folder-->
+    <target name="cleanBuild">
+        <property name="targetName" value="cleanBuild"/>
+        <echo> From ${source}, Target: ${targetName}</echo>
+        <delete>
+            <fileset dir="out"/>
+        </delete>
+    </target>
+
+
+    <target name="buildTst">
+        <property name="targetName" value="buildTst"/>
+        <echo>From ${source}, Target: ${targetName}</echo>
+        <!--        Create a out folder to contain compiled byte code-->
+        <mkdir dir="out"/>
+        <javac srcdir="tst" destdir="out">
+            <classpath>
+                <pathelement location="libs/junit-4.13.2.jar"/>
+                <pathelement location="libs/hamcrest-core-1.3.jar"/>
+            </classpath>
+        </javac>
+    </target>
+
+
+    <target name="JUnit" depends="buildTst">
+        <junit printsummary="true" haltonfailure="true">
+            <classpath>
+                <pathelement location="out"/>
+                <pathelement location="libs/junit-4.13.2.jar"/>
+                <pathelement location="libs/hamcrest-core-1.3.jar"/>
+            </classpath>
+            <test name="tst.MainTest"/>
+        </junit>
+    </target>
+</project>
